@@ -1,0 +1,5 @@
+A lightweight library for outputting latex from C++, 
+with a particular emphasis on drawing graphs nicely.
+Designed for use with some other projects (like grapt).
+
+Very much a work in progress.
