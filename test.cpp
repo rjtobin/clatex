@@ -10,14 +10,25 @@
 int main()
 {
   Clatex cl;
-  cl.open("test.tex", "My Test Document", "Josh Tobin");
-  CDrawing& d = cl.newDrawing();
+  CText *introduction, *details;
+
+  cl.setTitle("My Test Document", "Josh Tobin");
+
+  introduction = cl.newSection("Introduction", false);
+  details = cl.newSection("Details", false);
+
+  CDrawing& d = details->newDrawing();
   d.addShape(new CPoint(0,0));
   d.addShape(new CPoint(0,1));
   d.addShape(new CPoint(1,0));
   d.addShape(new CPoint(1,1));
   d.draw();
-  cl.close();
+
+  introduction->addText("This is a test paragraph.  Here is\
+                             some test in this test paragraph.");
+
+  
+  cl.write("test.tex");
 
   return 0;
 }

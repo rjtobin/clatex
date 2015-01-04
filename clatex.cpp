@@ -9,12 +9,48 @@
 
 using namespace std;
 
-void CPoint::draw(std::ofstream& out)
+CDrawing& CText::newDrawing()
 {
-  out << "\\filldraw (" << x << "," << y << ") circle [radius=0.08];" << endl;
+  mDrawings.push_front(CDrawing(this));
+  return mDrawings.front();
 }
 
-CDrawing::CDrawing(Clatex* parent)
+void CText::addText(string text)
+{
+  mText += text;
+}
+
+void CText::mCmd(string cmd, string arg_sq, string arg_brace)
+{
+  mText += "\\" + cmd;
+  if(arg_sq != "")
+    mText += "[" + arg_sq + "]";
+  if(arg_brace != "")
+    mText += "{" + arg_brace + "}";
+}
+
+void CText::mCmd(string cmd, string arg_brace)
+{
+  mCmd(cmd, "", arg_brace);
+}
+
+void CText::mCmd(string cmd)
+{
+  mCmd(cmd, "", "");
+}
+
+
+void CPoint::draw(string& out)
+{
+  out += "\\filldraw (" + to_string(x) + "," + to_string(y) + ") circle [radius=0.08];\n";
+}
+
+void CLine::draw(string& out)
+{
+  out += "\\draw (" + to_string(p1.x) + "," + to_string(p1.y) + ") -- (" + to_string(p2.x) + "," + to_string(p2.y) + ");\n";
+}
+
+CDrawing::CDrawing(CText* parent)
  : mParent(parent)
 {
 }
@@ -32,88 +68,82 @@ void CDrawing::addShape(CShape* shape)
 
 void CDrawing::draw()
 {
-  ofstream& out = mParent->getOutputFile();
-  mCmd(out,"begin","tikzpicture");
+  string& text = mParent->mText;
+  mParent->mCmd("begin","tikzpicture");
   for(deque<CShape*>::iterator i=mShapes.begin(); i!=mShapes.end(); i++)
-    (*i)->draw(out);
-  mCmd(out,"end","tikzpicture");
+    (*i)->draw(text);
+  mParent->mCmd("end","tikzpicture");
 }
 
 Clatex::Clatex()
-        : mInit(false)
+ : mOutTitle(false)  
 {
 }
 
-Clatex::Clatex(string filename, string title, string author)
-        : mInit(true), mFilename(filename), mAuthor(author), mOutTitle(true)
+Clatex::~Clatex()
 {
-  mOut.open(filename.c_str());
-  mInitOutput();
+  for(deque<CText*>::iterator sec=mSections.begin();
+      sec != mSections.end(); sec++)
+  {
+    delete (*sec);
+  }  
 }
 
-void Clatex::open(string filename)
+void Clatex::setTitle(string title, string author)
 {
-  if(mInit)
-    return;
-  mFilename = filename;
-  mInit = true;
-  mOutTitle = false;
-
-  mOut.open(filename.c_str());
-  mInitOutput();
-}
-
-void Clatex::close()
-{
-  mFinOutput();
-  mOut.close();
-}
-
-void Clatex::open(string filename, string title, string author)
-{
-  if(mInit)
-    return;
-  mFilename = filename;
   mTitle = title;
   mAuthor = author;
-  mInit = true;
-
-  mOut.open(filename.c_str());
-  mInitOutput();
+  mOutTitle = true;
 }
 
-ofstream& Clatex::getOutputFile()
+void Clatex::write(string filename)
 {
-  return mOut;
-}
-
-CDrawing& Clatex::newDrawing()
-{
-  mDrawings.push_front(CDrawing(this));
-  return mDrawings.front();
-}
-
-void Clatex::mInitOutput()
-{
-  mCmd("documentclass", "11pt", "article");
-  mCmd("usepackage", "tikz");
+  ofstream out(filename);
+  
+  mCmd(out, "documentclass", "11pt", "article");
+  mCmd(out, "usepackage", "tikz");
   if(mOutTitle)
   {
-    mCmd("title", mTitle);
-    mCmd("author", mAuthor);
+    mCmd(out, "title", mTitle);
+    mCmd(out, "author", mAuthor);
   }
 
-  mCmd("begin","document");
+  mCmd(out, "begin", "document");
   if(mOutTitle)
-    mCmd("maketitle");
+    mCmd(out, "maketitle");
+
+  deque<string>::iterator title = mSectionTitles.begin();
+  deque<bool>::iterator number = mSectionNumber.begin();
+  for(deque<CText*>::iterator sec=mSections.begin();
+      sec != mSections.end(); sec++, title++, number++)
+  {
+    if(*number)
+      mCmd(out, "section", *title);
+    else
+      mCmd(out, "section*", *title);
+    out << (*sec)->mText << endl;
+  }
+      
+  mCmd(out, "end", "document");
+
+  out.close();
 }
 
-void Clatex::mFinOutput()
+CText* Clatex::newSection(string title, bool number)
 {
-  mCmd("end","document");
+  mSectionTitles.push_back(title);
+  CText* section = new CText();
+  mSections.push_back(section);
+  mSectionNumber.push_back(number);
+  return section;
 }
 
-void Clatex::mCmd(std::string cmd, std::string arg_sq, std::string arg_brace)
+CText* Clatex::newSection(string title)
+{
+  return newSection(title, false);
+}
+
+/*void Clatex::mCmd(std::string cmd, std::string arg_sq, std::string arg_brace)
 {
   ::mCmd(mOut, cmd, arg_sq, arg_brace);
 }
@@ -126,9 +156,9 @@ void Clatex::mCmd(std::string cmd, std::string arg_brace)
 void Clatex::mCmd(std::string cmd)
 {
   ::mCmd(mOut, cmd);
-}
+}*/
 
-static void mCmd(std::ofstream& mOut, string cmd, string arg_sq, string arg_brace)
+void Clatex::mCmd(std::ofstream& mOut, string cmd, string arg_sq, string arg_brace)
 {
   mOut << "\\" << cmd;
   if(arg_sq != "")
@@ -138,7 +168,7 @@ static void mCmd(std::ofstream& mOut, string cmd, string arg_sq, string arg_brac
   mOut << endl;
 }
 
-static void mCmd(std::ofstream& mOut, string cmd, string arg_brace)
+void Clatex::mCmd(std::ofstream& mOut, string cmd, string arg_brace)
 {
   mOut << "\\" << cmd;
   if(arg_brace != "")
@@ -146,7 +176,7 @@ static void mCmd(std::ofstream& mOut, string cmd, string arg_brace)
   mOut << endl;
 }
 
-static void mCmd(std::ofstream& mOut, string cmd)
+void Clatex::mCmd(std::ofstream& mOut, string cmd)
 {
   mOut << "\\" << cmd;
   mOut << endl;

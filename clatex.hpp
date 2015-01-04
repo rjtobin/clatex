@@ -16,14 +16,37 @@
 
 #include <fstream>
 #include <deque>
+#include <string>
 
 class Clatex;
+class CShape;
+class CText;
+class CDrawing;
+
+class CText
+{
+friend class Clatex;
+friend class CDrawing;
+public:
+  CDrawing& newDrawing();
+
+  void addText(std::string text);
+  
+  void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
+  void mCmd(std::string cmd, std::string arg_brace);
+  void mCmd(std::string cmd);
+  
+private:  
+  
+  std::deque<CDrawing> mDrawings;
+  std::string mText;
+};
 
 class CShape
 {
 friend class CDrawing;
 private:
-  virtual void draw(std::ofstream& out) = 0;
+  virtual void draw(std::string& text) = 0;
 };
 
 class CPoint : public CShape
@@ -36,68 +59,55 @@ public:
   CPoint(int X, int Y)
    : x(X), y(Y) {};
 private:
-  void draw(std::ofstream& out);
-
+  void draw(std::string& out);
 };
 
-/*class CLine : public CShape
+class CLine : public CShape
 {
 public:
   CPoint p1, p2;
 private:
-  void draw(std::ofstream& out);
-  };*/
+  void draw(std::string& text);
+};
 
 class CDrawing
 {
 //friend class CShape;
 public:
-  CDrawing(Clatex* parent);
+  CDrawing(CText* parent);
   ~CDrawing();
   void addShape(CShape* shape);
   void draw();
 private:
   std::deque<CShape*> mShapes;
-  Clatex* mParent;
+  CText* mParent;
 };
 
-class Clatex
+class Clatex : public CText
 {
 public:
   Clatex();
-  Clatex(std::string filename, std::string title, std::string author);
-
-  void open(std::string filename);
-  void open(std::string filename, std::string title, std::string author);
-
-  std::ofstream& getOutputFile();
+  ~Clatex();
   
-  CDrawing& newDrawing();
-
-  void close();
+  void setTitle(std::string title, std::string author);  
   
+  void write(std::string filename);
+
+  CText* newSection(std::string title);
+  CText* newSection(std::string title, bool number);
   
 private:
-  std::string mFilename;
   std::string mTitle;
   std::string mAuthor;
-  
-  bool mInit;
-  std::ofstream mOut;
   bool mOutTitle;
-
-  void mInitOutput();
-  void mFinOutput();
-  void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
-  void mCmd(std::string cmd, std::string arg_brace);
-  void mCmd(std::string cmd);
-
-  std::deque<CDrawing> mDrawings;
+  
+  std::deque<CText*> mSections;
+  std::deque<std::string> mSectionTitles;
+  std::deque<bool> mSectionNumber;
+  
+  void mCmd(std::ofstream& mOut, std::string cmd, std::string arg_sq, std::string arg_brace);
+  void mCmd(std::ofstream& mOut, std::string cmd, std::string arg_brace);
+  void mCmd(std::ofstream& mOut, std::string cmd);
 };
-
-static void mCmd(std::ofstream& mOut, std::string cmd, std::string arg_sq, std::string arg_brace);
-static void mCmd(std::ofstream& mOut, std::string cmd, std::string arg_brace);
-static void mCmd(std::ofstream& mOut, std::string cmd);
-
 
 #endif
