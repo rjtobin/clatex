@@ -2,7 +2,7 @@
    CLaTeX
    A simple library to handle LaTeX output from C++.
   
-   Josh Tobin (tobinrj@tcd.ie), 2014
+   Josh Tobin (tobinrj@tcd.ie), 2015
    ======================================================================== */
 
 #include "clatex.hpp"
@@ -42,12 +42,18 @@ void CText::mCmd(string cmd)
 
 void CPoint::draw(string& out)
 {
-  out += "\\filldraw (" + to_string(x) + "," + to_string(y) + ") circle [radius=0.08];\n";
+  out += "\\filldraw[" + color.name + "]";
+  out += " (" + to_string(x) + "," + to_string(y) + ") circle [radius=0.08];\n";
 }
 
 void CLine::draw(string& out)
 {
-  out += "\\draw (" + to_string(p1.x) + "," + to_string(p1.y) + ") -- (" + to_string(p2.x) + "," + to_string(p2.y) + ");\n";
+  out += "\\draw[";
+  if(thick)
+    out += "thick,";
+  if(dashed)
+    out += "dashed,";
+  out += color.name + "] (" + to_string(p1.x) + "," + to_string(p1.y) + ") -- (" + to_string(p2.x) + "," + to_string(p2.y) + ");\n";
 }
 
 CDrawing::CDrawing(CText* parent)
@@ -143,21 +149,6 @@ CText* Clatex::newSection(string title)
   return newSection(title, false);
 }
 
-/*void Clatex::mCmd(std::string cmd, std::string arg_sq, std::string arg_brace)
-{
-  ::mCmd(mOut, cmd, arg_sq, arg_brace);
-}
-
-void Clatex::mCmd(std::string cmd, std::string arg_brace)
-{
-  ::mCmd(mOut, cmd, arg_brace);
-}
-
-void Clatex::mCmd(std::string cmd)
-{
-  ::mCmd(mOut, cmd);
-}*/
-
 void Clatex::mCmd(std::ofstream& mOut, string cmd, string arg_sq, string arg_brace)
 {
   mOut << "\\" << cmd;
@@ -180,4 +171,17 @@ void Clatex::mCmd(std::ofstream& mOut, string cmd)
 {
   mOut << "\\" << cmd;
   mOut << endl;
+}
+
+void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n)
+{
+  for(int i=0; i<n; i++)
+  {
+    for(int j=0; j<length[i]-1; j++)
+    {
+      CLine* nl = new CLine(plots[i][j], plots[i][j+1], colors[i]);
+      nl->thick = true;
+      d->addShape(nl);
+    }
+  }
 }
