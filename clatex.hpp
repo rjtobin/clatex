@@ -66,7 +66,7 @@ friend class CSection;
 public:
   CText();
   CText(std::string text);
-  ~CText();
+  virtual ~CText();
   
   //CDrawing& newDrawing();
 
@@ -84,9 +84,10 @@ public:
 
 protected:  
   
-  std::string mText;
   CText* mPrev;
   CText* mNext;
+  std::string mText;
+
 };
 
 class CSection : public CText
@@ -109,6 +110,7 @@ class CShape
 {
 friend class CDrawing;
 public:
+  virtual ~CShape() {};
   CColor color;
   virtual void draw(std::string& text) = 0;
 };
