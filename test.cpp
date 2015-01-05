@@ -24,11 +24,12 @@ int main()
   introduction = cl.newSection("Introduction", false);
   details = cl.newSection("Details", false);
 
-  CDrawing& d = details->newDrawing();
+  details->mCmd("begin", "center");
+  
+  CDrawing* d = new CDrawing;
+  details->addText(d);
 
   // Draw many sine functions 
-
-  details->mCmd("begin", "center");
 
   double dx = 0.005;
   int n = 5;
@@ -54,16 +55,17 @@ int main()
       pts[i][j].y = sin(dx * j * i);
     }
   }
-  DrawPlots(&d, pts, col, length, n);
-  
-  d.draw();
+  DrawPlots(d, pts, col, length, n);
+
   details->mCmd("end", "center");
 
   //  Add text to the sections 
   
-  introduction->addText("This is a test article.  It is a\
+  introduction->addText("This is a test article.  It is a             \
    \\LaTeX ~document generated through C++.  Below is an example image.");
 
+  introduction->addText("Here is some more text.");
+  
   details->addText("\nHere is a test matrix:\n");
 
   // Make a matrix 

@@ -51,23 +51,58 @@ public:
   CColor(std::string name_) : name(name_) {};
 };
 
+/*class CText
+{
+public:
+  void getText(std::string& s);
+private:
+  CText* next;
+  };*/
+
 class CText
 {
-friend class Clatex;
-friend class CDrawing;
+friend class CSection;
+//friend class CDrawing;
 public:
-  CDrawing& newDrawing();
-
-  void addText(std::string text);
+  CText();
+  CText(std::string text);
+  ~CText();
   
+  //CDrawing& newDrawing();
+
+  virtual CText* addText(std::string text);
+  virtual CText* addText(CText* next);
+
+  virtual CText* prependText(std::string text);
+  virtual CText* prependText(CText* next);
+
+  virtual void getText(std::string& s);
+  
+  virtual void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
+  virtual void mCmd(std::string cmd, std::string arg_brace);
+  virtual void mCmd(std::string cmd);
+
+protected:  
+  
+  std::string mText;
+  CText* mPrev;
+  CText* mNext;
+};
+
+class CSection : public CText
+{
+public:
+  CSection();
+  CText* addText(CText* next);
+  CText* addText(std::string text);
   void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
   void mCmd(std::string cmd, std::string arg_brace);
   void mCmd(std::string cmd);
-  
-private:  
-  
-  std::deque<CDrawing> mDrawings;
-  std::string mText;
+
+  //CText* prependText(CText* next);
+  //CText* prependText(std::string text);
+private:
+  CText* mEnd;
 };
 
 class CShape
@@ -109,17 +144,16 @@ private:
   void draw(std::string& text);
 };
 
-class CDrawing
+class CDrawing : public CText
 {
 //friend class CShape;
 public:
-  CDrawing(CText* parent);
+  CDrawing();
   ~CDrawing();
   void addShape(CShape* shape);
-  void draw();
+  void getText(std::string& s);
 private:
   std::deque<CShape*> mShapes;
-  CText* mParent;
 };
 
 class Clatex : public CText
@@ -132,15 +166,15 @@ public:
   
   void write(std::string filename);
 
-  CText* newSection(std::string title);
-  CText* newSection(std::string title, bool number);
+  CSection* newSection(std::string title);
+  CSection* newSection(std::string title, bool number);
   
 private:
   std::string mTitle;
   std::string mAuthor;
   bool mOutTitle;
   
-  std::deque<CText*> mSections;
+  std::deque<CSection*> mSections;
   std::deque<std::string> mSectionTitles;
   std::deque<bool> mSectionNumber;
   
@@ -148,6 +182,8 @@ private:
   void mCmd(std::ofstream& mOut, std::string cmd, std::string arg_brace);
   void mCmd(std::ofstream& mOut, std::string cmd);
 };
+
+//void DrawTable(CText* text, 
 
 void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n);
 
@@ -174,6 +210,10 @@ void DrawMatrix(CText* cl, std::string (&mat)[m][n])
   text+="\\end{array}\\right)";
   cl->addText(text);
 }
+
+static void string_cmd(std::string& s, std::string cmd, std::string arg_sq, std::string arg_brace);
+static void string_cmd(std::string& s, std::string cmd, std::string arg_brace);
+static void string_cmd(std::string& s, std::string cmd);
 
 
 #endif
