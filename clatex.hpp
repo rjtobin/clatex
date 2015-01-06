@@ -6,9 +6,9 @@
    Josh Tobin (tobinrj@tcd.ie), 2015
    ======================================================================== */
 
+// XXX: this mEnd business is a mess
 // XXX: add file options (font size etc) before opening
-// XXX: handle matched commands in a more elegant/natural way?
-//  PPP:  -- maybe have another higher level API
+// XXX: ugh mCmd adding text is crazy
 // XXX: use unique_ptr for CImage
 // XXX: add packages dynamically, rather than in bulk
 
@@ -77,6 +77,8 @@ public:
   virtual CText* prependText(CText* next);
 
   virtual void getText(std::string& s);
+
+  virtual CText* matchedCmd(std::string command);
   
   virtual void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
   virtual void mCmd(std::string cmd, std::string arg_brace);
@@ -99,7 +101,8 @@ public:
   void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
   void mCmd(std::string cmd, std::string arg_brace);
   void mCmd(std::string cmd);
-
+  CText* matchedCmd(std::string command);
+  
   //CText* prependText(CText* next);
   //CText* prependText(std::string text);
 private:
@@ -171,7 +174,7 @@ public:
   CSection* newSection(std::string title);
   CSection* newSection(std::string title, bool number);
   
-private:
+//private:
   std::string mTitle;
   std::string mAuthor;
   bool mOutTitle;

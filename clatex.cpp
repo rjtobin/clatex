@@ -62,6 +62,17 @@ void CText::getText(string& s)
     mNext->getText(s);
 }
 
+CText* CText::matchedCmd(string command)
+{
+  mCmd("begin", command);
+  CText* mid = new CText();
+  addText(mid);
+  CText* end = new CText();
+  mid->addText(end);
+  end->mCmd("end", command);
+  return mid;
+}
+
 void CText::mCmd(string cmd, string arg_sq, string arg_brace)
 {
   string_cmd(mText, cmd, arg_sq, arg_brace);
@@ -109,6 +120,17 @@ void CSection::mCmd(string cmd, string arg_brace)
 void CSection::mCmd(string cmd)
 {
   mEnd->mCmd(cmd);
+}
+
+CText* CSection::matchedCmd(string command)
+{
+  mCmd("begin", command);
+  CText* mid = new CText();
+  addText(mid);
+  CText* end = new CText();
+  addText(end);
+  end->mCmd("end", command);
+  return mid;
 }
 
 void CPoint::draw(string& out)

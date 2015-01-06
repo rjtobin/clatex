@@ -15,7 +15,7 @@ using namespace std;
 int main()
 {
   Clatex cl;
-  CText *introduction, *details;
+  CSection *introduction, *details;
 
   // Make the title and a few sections
   
@@ -24,10 +24,10 @@ int main()
   introduction = cl.newSection("Introduction", false);
   details = cl.newSection("Details", false);
 
-  details->mCmd("begin", "center");
+  CText* centered = details->matchedCmd("center");
   
   CDrawing* d = new CDrawing;
-  details->addText(d);
+  centered->addText(d);
 
   // Draw many sine functions 
 
@@ -57,9 +57,7 @@ int main()
   }
   DrawPlots(d, pts, col, length, n);
 
-  details->mCmd("end", "center");
-
-  //  Add text to the sections 
+  // Add text to the sections 
   
   introduction->addText("This is a test article.  It is a             \
    \\LaTeX ~document generated through C++.  Below is an example image.");
@@ -80,7 +78,7 @@ int main()
   details->mCmd("]");
   
   cl.write("test.tex");
-
+  
   for(int i=0; i<n; i++)
     delete[] pts[i];
   
