@@ -11,6 +11,8 @@
 // XXX: ugh mCmd adding text is crazy
 // XXX: use unique_ptr for CImage
 // XXX: add packages dynamically, rather than in bulk
+// XXX: better name for CSection? or some proper generic text thing
+// XXX: lol rewrite everything
 
 #define CLATEX_H
 
@@ -144,7 +146,13 @@ public:
    : p1(P1), p2(P2), thick(false), dashed(false) {};
   CLine(CPoint P1, CPoint P2, CColor Color)
    : p1(P1), p2(P2), thick(false), dashed(false) { color = Color;};
-  
+  CLine(double x1, double y1, double x2, double y2)
+   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)) {};
+  CLine(double x1, double y1, double x2, double y2, CColor Color)
+   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)) {color = Color;};
+  CLine(double x1, double y1, double x2, double y2, CColor Color, bool Thick)
+   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)), thick(Thick) {color = Color;};
+
 private:
   void draw(std::string& text);
 };
@@ -190,6 +198,9 @@ public:
 
 //void DrawTable(CText* text, 
 
+void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
+             double y_start, double y_end, double big_grading,
+             double small_grading);
 void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n);
 
 template <size_t m, size_t n>
@@ -215,6 +226,8 @@ void DrawMatrix(CText* cl, std::string (&mat)[m][n])
   text+="\\end{array}\\right)";
   cl->addText(text);
 }
+
+void AddEnumerate(CText* cl, CText* items, int n, size_t t);
 
 static void string_cmd(std::string& s, std::string cmd, std::string arg_sq, std::string arg_brace);
 static void string_cmd(std::string& s, std::string cmd, std::string arg_brace);

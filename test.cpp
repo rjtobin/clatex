@@ -55,7 +55,25 @@ int main()
       pts[i][j].y = sin(dx * j * i);
     }
   }
-  DrawPlots(d, pts, col, length, n);
+  /*length[0] = length[1] = l;
+  for(int i=0; i<l; i++)
+  {
+    
+    pts[1][i].x = 10 * dx * i;
+    pts[1][i].y = 5 * pow(2., 3. - 2. * ceil(2./(dx * i)));
+    }*/
+
+  AddAxes(d, CPoint(0,0), 0,5,0,2,0.5,0.1);
+
+  for(int n=3; n<70; n++)
+  {
+    double y = 12. * pow(2.,3- 2. * n);
+    double x1 = 5. * 2. / n;
+    double x2 = 5. * 2. / (n-1);
+    d->addShape(new CLine(x1,y,x2,y, CColor(C_ORANGE),true));
+  }
+  
+  //DrawPlots(d, pts, col, length, n);
 
   // Add text to the sections 
   
@@ -76,6 +94,12 @@ int main()
 
   DrawMatrix(details, test);
   details->mCmd("]");
+
+  CSection sec[4];
+  for(int i=0; i<4; i++)
+    sec[i].addText("This is the " + to_string(i) + "th item.");
+
+  AddEnumerate(details, sec, 4, sizeof(CSection));
   
   cl.write("test.tex");
   

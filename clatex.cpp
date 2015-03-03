@@ -272,6 +272,35 @@ void Clatex::mCmd(std::ofstream& mOut, string cmd)
   mOut << endl;
 }
 
+void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
+             double y_start, double y_end, double big_grading,
+             double small_grading)
+{
+  d->addShape(new CLine(x_start, origin.y, x_end, origin.y));
+  d->addShape(new CLine(origin.x, y_start, origin.x, y_end));
+
+  for(double x=x_start; x<=x_end; x+=big_grading)
+  {
+    d->addShape(new CLine(x,origin.y-0.07,x,origin.y+0.07));
+  }
+
+  for(double y=y_start; y<=y_end; y+=big_grading)
+  {
+    d->addShape(new CLine(origin.x-0.07,y,origin.x+0.07,y));
+  }
+
+  for(double x=x_start; x<=x_end; x+=small_grading)
+  {
+    d->addShape(new CLine(x,origin.y-0.025,x,origin.y+0.025));
+  }
+
+  for(double y=y_start; y<=y_end; y+=small_grading)
+  {
+    d->addShape(new CLine(origin.x-0.025,y,origin.x+0.025,y));
+  }
+  
+}
+
 void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n)
 {
   for(int i=0; i<n; i++)
@@ -283,6 +312,23 @@ void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n)
       d->addShape(nl);
     }
   }
+}
+
+// XXX: may our children forgive us (this is so bad...)
+
+void AddEnumerate(CText* cl, CText* items, int n, size_t size)
+{
+  string text;
+  text = "\\begin{enumerate}\n";
+  for(int i=0; i<n; i++)
+  {
+    string res;
+    items->getText(res);
+    text += "\\item \n" + res + "\n";
+    items = (CText*) ( ((char*) items) + size);
+  }
+  text += "\\end{enumerate}\n\n";
+  cl->addText(text);
 }
 
 static void string_cmd(string& s, string cmd, string arg_sq, string arg_brace)
