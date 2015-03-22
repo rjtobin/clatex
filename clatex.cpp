@@ -25,34 +25,34 @@ CText::CText(string text)
 { 
 }
 
-CText* CText::addText(string text)
+CText& CText::addText(string text)
 {
   mText += text;
-  return this;
+  return *this;
 }
 
-CText* CText::addText(CText* text)
+CText& CText::addText(CText* text)
 {
   if(mNext)
     text->mNext = mNext;
   mNext = text;
   text->mPrev = text;
-  return text;
+  return *text;
 }
 
-CText* CText::prependText(string text)
+CText& CText::prependText(string text)
 {
   mText = text + mText;
-  return this;
+  return *this;
 }
 
-CText* CText::prependText(CText* text)
+CText& CText::prependText(CText* text)
 {
   if(mPrev)
     text->mPrev = mPrev;
   mPrev = text;
   text->mNext = this;
-  return text;
+  return *text;
 }
 
 void CText::getText(string& s)
@@ -62,7 +62,7 @@ void CText::getText(string& s)
     mNext->getText(s);
 }
 
-CText* CText::matchedCmd(string command)
+CText& CText::matchedCmd(string command)
 {
   mCmd("begin", command);
   CText* mid = new CText();
@@ -70,7 +70,7 @@ CText* CText::matchedCmd(string command)
   CText* end = new CText();
   mid->addText(end);
   end->mCmd("end", command);
-  return mid;
+  return *mid;
 }
 
 void CText::mCmd(string cmd, string arg_sq, string arg_brace)
@@ -93,15 +93,15 @@ CSection::CSection()
   mEnd = mNext = new CText();
 }
 
-CText* CSection::addText(CText* next)
+CText& CSection::addText(CText* next)
 {
   next->mPrev = mEnd;
   mEnd->mNext = next;
   mEnd = next;
-  return next;
+  return *next;
 }
 
-CText* CSection::addText(string text)
+CText& CSection::addText(string text)
 {
   CText* next = new CText(text);
   return addText(next);
@@ -122,7 +122,7 @@ void CSection::mCmd(string cmd)
   mEnd->mCmd(cmd);
 }
 
-CText* CSection::matchedCmd(string command)
+CText& CSection::matchedCmd(string command)
 {
   mCmd("begin", command);
   CText* mid = new CText();
@@ -130,7 +130,7 @@ CText* CSection::matchedCmd(string command)
   CText* end = new CText();
   addText(end);
   end->mCmd("end", command);
-  return mid;
+  return *mid;
 }
 
 void CPoint::draw(string& out)
@@ -236,16 +236,16 @@ void Clatex::write(string filename)
   out.close();
 }
 
-CSection* Clatex::newSection(string title, bool number)
+CSection& Clatex::newSection(string title, bool number)
 {
   mSectionTitles.push_back(title);
   CSection* section = new CSection();
   mSections.push_back(section);
   mSectionNumber.push_back(number);
-  return section;
+  return *section;
 }
 
-CSection* Clatex::newSection(string title)
+CSection& Clatex::newSection(string title)
 {
   return newSection(title, false);
 }
@@ -318,7 +318,7 @@ void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n)
 
 // XXX: may our children forgive us (this is so bad...)
 
-void AddEnumerate(CText* cl, CText* items, int n, size_t size)
+void AddEnumerate(CText& cl, CText* items, int n, size_t size)
 {
   string text;
   text = "\\begin{enumerate}\n";
@@ -330,7 +330,7 @@ void AddEnumerate(CText* cl, CText* items, int n, size_t size)
     items = (CText*) ( ((char*) items) + size); // :(
   }
   text += "\\end{enumerate}\n\n";
-  cl->addText(text);
+  cl.addText(text);
 }
 
 static void string_cmd(string& s, string cmd, string arg_sq, string arg_brace)

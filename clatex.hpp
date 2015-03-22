@@ -53,14 +53,6 @@ public:
   CColor(std::string name_) : name(name_) {};
 };
 
-/*class CText
-{
-public:
-  void getText(std::string& s);
-private:
-  CText* next;
-  };*/
-
 class CText
 {
 friend class CSection;
@@ -70,17 +62,15 @@ public:
   CText(std::string text);
   virtual ~CText();
   
-  //CDrawing& newDrawing();
+  virtual CText& addText(std::string text);
+  virtual CText& addText(CText* next);
 
-  virtual CText* addText(std::string text);
-  virtual CText* addText(CText* next);
-
-  virtual CText* prependText(std::string text);
-  virtual CText* prependText(CText* next);
+  virtual CText& prependText(std::string text);
+  virtual CText& prependText(CText* next);
 
   virtual void getText(std::string& s);
 
-  virtual CText* matchedCmd(std::string command);
+  virtual CText& matchedCmd(std::string command);
   
   virtual void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
   virtual void mCmd(std::string cmd, std::string arg_brace);
@@ -98,12 +88,12 @@ class CSection : public CText
 {
 public:
   CSection();
-  CText* addText(CText* next);
-  CText* addText(std::string text);
+  CText& addText(CText* next);
+  CText& addText(std::string text);
   void mCmd(std::string cmd, std::string arg_sq, std::string arg_brace);
   void mCmd(std::string cmd, std::string arg_brace);
   void mCmd(std::string cmd);
-  CText* matchedCmd(std::string command);
+  CText& matchedCmd(std::string command);
   
   //CText* prependText(CText* next);
   //CText* prependText(std::string text);
@@ -179,8 +169,8 @@ public:
   
   void write(std::string filename);
 
-  CSection* newSection(std::string title);
-  CSection* newSection(std::string title, bool number);
+  CSection& newSection(std::string title);
+  CSection& newSection(std::string title, bool number);
   
 //private:
   std::string mTitle;
@@ -204,7 +194,7 @@ void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
 void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n);
 
 template <size_t m, size_t n>
-void DrawMatrix(CText* cl, std::string (&mat)[m][n])
+void DrawMatrix(CText& cl, std::string (&mat)[m][n])
 {
   std::string text;
   text = "\\left( \\begin{array}{";
@@ -224,14 +214,13 @@ void DrawMatrix(CText* cl, std::string (&mat)[m][n])
     text+="\n";
   }
   text+="\\end{array}\\right)";
-  cl->addText(text);
+  cl.addText(text);
 }
 
-void AddEnumerate(CText* cl, CText* items, int n, size_t t);
+void AddEnumerate(CText& cl, CText* items, int n, size_t t);
 
 static void string_cmd(std::string& s, std::string cmd, std::string arg_sq, std::string arg_brace);
 static void string_cmd(std::string& s, std::string cmd, std::string arg_brace);
 static void string_cmd(std::string& s, std::string cmd);
-
 
 #endif

@@ -15,19 +15,19 @@ using namespace std;
 int main()
 {
   Clatex cl;
-  CSection *introduction, *details;
+  //CSection *introduction, *details;
 
   // Make the title and a few sections
   
   cl.setTitle("My Test Document", "Test Author");
 
-  introduction = cl.newSection("Introduction", false);
-  details = cl.newSection("Details", false);
+  CSection& introduction = cl.newSection("Introduction", false);
+  CSection& details = cl.newSection("Details", false);
 
-  CText* centered = details->matchedCmd("center");
+  CText& centered = details.matchedCmd("center");
   
   CDrawing* d = new CDrawing;
-  centered->addText(d);
+  centered.addText(d);
 
   // Draw many sine functions 
 
@@ -77,23 +77,23 @@ int main()
 
   // Add text to the sections 
   
-  introduction->addText("This is a test article.  It is a             \
+  introduction.addText("This is a test article.  It is a             \
    \\LaTeX ~document generated through C++.  Below is an example image.");
 
-  introduction->addText("Here is some more text.");
+  introduction.addText("Here is some more text.");
   
-  details->addText("\nHere is a test matrix:\n");
+  details.addText("\nHere is a test matrix:\n");
 
   // Make a matrix 
   
-  details->mCmd("[");
+  details.mCmd("[");
   string test[3][3];
   for(int i=0; i<3; i++)
     for(int j=0; j<3; j++)
       test[i][j] = "x^{" + to_string(i+j) + "}";
 
   DrawMatrix(details, test);
-  details->mCmd("]");
+  details.mCmd("]");
 
   CSection sec[4];
   for(int i=0; i<4; i++)
