@@ -205,6 +205,8 @@ void Clatex::write(string filename)
   
   mCmd(out, "documentclass", "11pt", "article");
   mCmd(out, "usepackage", "tikz");
+  mCmd(out, "usepackage", "amsmath");
+
   if(mOutTitle)
   {
     mCmd(out, "title", mTitle);
@@ -325,7 +327,7 @@ void AddEnumerate(CText* cl, CText* items, int n, size_t size)
     string res;
     items->getText(res);
     text += "\\item \n" + res + "\n";
-    items = (CText*) ( ((char*) items) + size);
+    items = (CText*) ( ((char*) items) + size); // :(
   }
   text += "\\end{enumerate}\n\n";
   cl->addText(text);

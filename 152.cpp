@@ -33,6 +33,13 @@ void Color(string (&mat)[m][n], int col, int d1, int d2)
 }
 
 template <size_t m, size_t n>
+void Mark(string (&mat)[m][n], int row, int col)
+{
+  mat[row][col] = "\\boxed{" + mat[row][col] + "}";
+}
+
+
+template <size_t m, size_t n>
 void MakeDominatedMatrix(string (&mat)[m][n], int col, int dom, int& good)
 {
   int mat_int[m][n];
@@ -82,6 +89,46 @@ void MakeDominatedMatrix(string (&mat)[m][n], int col, int dom, int& good)
   return;
 }
 
+template <size_t m, size_t n>
+void MakeSaddleMatrix(string (&mat)[m][n], int row, int col)
+{
+  int mat_int[m][n];
+  //for(int i=0; i<m; i++)
+  //  mat[i] = new int[n];
+  
+  for(int i=0; i<m; i++)
+    for(int j=0; j<n; j++)
+    {
+      mat_int[i][j] = (int)(drand48() * 30) - 15;
+      //mat[i][j] = to_string(mat_int[i][j]);
+    }
+  
+  int x = mat_int[row][col];
+  
+  //int maxi = -10000, mini = 10000;
+  for(int i=0; i<n; i++)
+    //if(mat_int[row][i] < mini)
+      if(i != col)
+        mat_int[row][i] = x + (int) (drand48() * 7.);
+
+   for(int i=0; i<m; i++)
+     // if(mat_int[i][col] > maxi)
+      if(i != row)
+        mat_int[i][col] = x - (int) (drand48() * 7.);
+
+   
+  
+  int adj = (int) (drand48() * 20) - 10;
+  
+  for(int i=0; i<m; i++)
+    for(int j=0; j<n; j++)
+      mat[i][j] = to_string(mat_int[i][j] + adj);
+
+  
+  return;
+}
+
+
 int main()
 {
   Clatex cl, cla;
@@ -101,7 +148,7 @@ int main()
   string m[5][5];
   for(int i=0; i<n; i++)
   {
-    if(drand48() < 1.7)
+    if(drand48() < 0.7)
     {
       int col = drand48() * 2;
       int dom = drand48() * 5;
@@ -112,7 +159,7 @@ int main()
       questions[i].addText("\\]");
 
       answers[i].addText("\\[");
-      Color(m,col,dom,good); // XXX: CURP 
+      Color(m,col,dom,good);
       DrawMatrix(&answers[i], m);
       answers[i].addText("\\]");
     }
@@ -120,8 +167,16 @@ int main()
     {
       int row = drand48() * 5;
       int col = drand48() * 5;
+      MakeSaddleMatrix(m,row,col);
+      questions[i].addText("\\[");
+      DrawMatrix(&questions[i], m);
+      questions[i].addText("\\]");
 
-      
+      answers[i].addText("\\[");
+      Mark(m,row,col);
+      DrawMatrix(&answers[i], m);
+      answers[i].addText("\\]");
+
     }
   }
 
