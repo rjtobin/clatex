@@ -7,22 +7,34 @@
 
 #include "clatex.hpp"
 
+#include <iostream>
 using namespace std;
 
 CText::CText()
- : mPrev(NULL), mNext(NULL)
+ : mPrev(NULL), mNext(nullptr)
 {
 }
 
 CText::~CText()
 {
-  if(mNext)
-    delete mNext;
 }
 
 CText::CText(string text)
- : mPrev(NULL), mNext(NULL), mText(text)
+ : mPrev(NULL), mNext(nullptr), mText(text)
 { 
+}
+
+void CText::dbg_print()
+{
+  CText* cur = this;
+  while(cur != NULL)
+  {
+    cout << "A node: " << cur << " " << cur->mNext.get() << endl;
+    string s;
+    cur->getText(s);
+    cout << s << endl;
+    cur = cur->mNext.get();
+  }
 }
 
 CText& CText::addText(string text)
@@ -33,10 +45,15 @@ CText& CText::addText(string text)
 
 CText& CText::addText(CText* text)
 {
-  if(mNext)
-    text->mNext = mNext;
-  mNext = text;
-  text->mPrev = text;
+  text->mPrev = this;
+  text->mNext.reset(nullptr);
+  text->mNext = move(this->mNext);
+  this->mNext.reset(text);
+  
+  if(this->mNext->mNext != nullptr)
+  {
+    this->mNext->mNext->mPrev = this->mNext.get();
+  }
   return *text;
 }
 
@@ -48,10 +65,15 @@ CText& CText::prependText(string text)
 
 CText& CText::prependText(CText* text)
 {
+  text->mNext.reset(nullptr);
+  if(mPrev)
+    text->mNext = move(mPrev->mNext);
+  else
+    text->mNext.reset(this);
+
   if(mPrev)
     text->mPrev = mPrev;
   mPrev = text;
-  text->mNext = this;
   return *text;
 }
 
@@ -66,11 +88,10 @@ CText& CText::matchedCmd(string command)
 {
   mCmd("begin", command);
   CText* mid = new CText();
-  addText(mid);
+  CText& ret = addText(mid);
   CText* end = new CText();
-  mid->addText(end);
   end->mCmd("end", command);
-  return *mid;
+  return ret;
 }
 
 void CText::mCmd(string cmd, string arg_sq, string arg_brace)
@@ -90,15 +111,18 @@ void CText::mCmd(string cmd)
 
 CSection::CSection()
 {
-  mEnd = mNext = new CText();
+  mNext.reset(new CText());
+  mEnd = mNext.get();
 }
 
 CText& CSection::addText(CText* next)
 {
   next->mPrev = mEnd;
-  mEnd->mNext = next;
-  mEnd = next;
-  return *next;
+  next->mNext.reset(nullptr);
+  next->mNext = move(mEnd->mNext);
+  mEnd->mNext.reset(next);
+  mEnd = mEnd->mNext.get();
+  return *mEnd;
 }
 
 CText& CSection::addText(string text)
@@ -125,12 +149,11 @@ void CSection::mCmd(string cmd)
 CText& CSection::matchedCmd(string command)
 {
   mCmd("begin", command);
-  CText* mid = new CText();
-  addText(mid);
-  CText* end = new CText();
-  addText(end);
-  end->mCmd("end", command);
-  return *mid;
+  CText& ret = addText(new CText());
+  CText& end = addText(new CText());
+  end.mCmd("end", command);
+
+  return ret;
 }
 
 void CPoint::draw(string& out)
@@ -151,6 +174,7 @@ void CLine::draw(string& out)
 
 CDrawing::CDrawing()
 {
+  mNext.reset(nullptr);
 }
 
 CDrawing::~CDrawing()

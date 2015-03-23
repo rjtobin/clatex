@@ -20,14 +20,15 @@ int main()
   // Make the title and a few sections
   
   cl.setTitle("My Test Document", "Test Author");
-
+ 
   CSection& introduction = cl.newSection("Introduction", false);
   CSection& details = cl.newSection("Details", false);
-
-  CText& centered = details.matchedCmd("center");
   
-  CDrawing* d = new CDrawing;
+  CText& centered = details.matchedCmd("center");
+
+  CDrawing* d = new CDrawing();
   centered.addText(d);
+
 
   // Draw many sine functions 
 
@@ -77,7 +78,7 @@ int main()
 
   // Add text to the sections 
   
-  introduction.addText("This is a test article.  It is a             \
+  introduction.addText("This is a test article.  It is a              \
    \\LaTeX ~document generated through C++.  Below is an example image.");
 
   introduction.addText("Here is some more text.");

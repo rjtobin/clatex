@@ -6,18 +6,16 @@
    Josh Tobin (tobinrj@tcd.ie), 2015
    ======================================================================== */
 
-// XXX: this mEnd business is a mess
 // XXX: add file options (font size etc) before opening
-// XXX: ugh mCmd adding text is crazy
-// XXX: use unique_ptr for CImage
+// XXX: mCmd fixes, no random latex commands
 // XXX: add packages dynamically, rather than in bulk
 // XXX: better name for CSection? or some proper generic text thing
-// XXX: lol rewrite everything
 
 #define CLATEX_H
 
-#include <fstream>
 #include <deque>
+#include <fstream>
+#include <memory>
 #include <string>
 
 class Clatex;
@@ -76,10 +74,12 @@ public:
   virtual void mCmd(std::string cmd, std::string arg_brace);
   virtual void mCmd(std::string cmd);
 
+  void dbg_print();
+
 protected:  
   
   CText* mPrev;
-  CText* mNext;
+  std::unique_ptr<CText> mNext;
   std::string mText;
 
 };
