@@ -172,6 +172,18 @@ void CLine::draw(string& out)
   out += color.name + "] (" + to_string(p1.x) + "," + to_string(p1.y) + ") -- (" + to_string(p2.x) + "," + to_string(p2.y) + ");\n";
 }
 
+void CGrid::draw(string& out)
+{
+  //   \draw[step=1,gray,very thin] (0,0) grid (10,7); 
+
+  out += "\\draw[step=" + to_string(step) + ",gray,very thin, ";
+  out += color.name + "]";
+  out += "(" + to_string(bot_left.x) + "," + to_string(bot_left.y) + ")";
+  out += " grid ";
+  out += "(" + to_string(top_right.x) + "," + to_string(top_right.y) + ");\n";
+}
+
+
 CDrawing::CDrawing()
 {
   mNext.reset(nullptr);
@@ -327,17 +339,45 @@ void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
   
 }
 
-void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n)
+// XXX fix grid so that it is lined up with integer values
+// XXX add tics and labels
+
+void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length,
+               int n, double start_x, double end_x, double start_y,
+               double end_y, double x_size, double y_size, bool grid)
 {
+  if(grid)
+    d->addShape(new CGrid(1,0,0,x_size,y_size));
+
+  double x_scale = x_size / (end_x - start_x);
+  double y_scale = y_size / (end_y - start_y);
+
+  CPoint p1, p2;
+  
   for(int i=0; i<n; i++)
   {
     for(int j=0; j<length[i]-1; j++)
     {
-      CLine* nl = new CLine(plots[i][j], plots[i][j+1], colors[i]);
+      p1.x = x_scale * (plots[i][j].x - start_x);
+      p1.y = y_scale * (plots[i][j].y - start_y);
+      p2.x = x_scale * (plots[i][j+1].x - start_x);
+      p2.y = y_scale * (plots[i][j+1].y - start_y);
+      
+      CLine* nl = new CLine(p1,p2, colors[i]);
       nl->thick = true;
       d->addShape(nl);
     }
   }
+
+  CLine* border = new CLine(CPoint(0,0), CPoint(x_size,0), CColor(C_BLACK));
+  d->addShape(border);
+  border = new CLine(CPoint(0,0), CPoint(0,y_size), CColor(C_BLACK));
+  d->addShape(border);
+  border = new CLine(CPoint(x_size,0), CPoint(x_size,y_size), CColor(C_BLACK));
+  d->addShape(border);
+  border = new CLine(CPoint(0,y_size), CPoint(x_size,y_size), CColor(C_BLACK));
+  d->addShape(border);
+  
 }
 
 // XXX: may our children forgive us (this is so bad...)

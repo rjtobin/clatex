@@ -15,7 +15,6 @@ using namespace std;
 int main()
 {
   Clatex cl;
-  //CSection *introduction, *details;
 
   // Make the title and a few sections
   
@@ -28,6 +27,18 @@ int main()
 
   CDrawing* d = new CDrawing();
   centered.addText(d);
+
+
+  //details.addText("That was an image.  Here is a nice graph! ");
+
+  //CText& centered_two = details.matchedCmd("center");
+  
+//  CDrawing* d2 = new CDrawing();
+//  Graph g(7);
+//  for(int i=0; i<6; i++)
+//    g.addEdge(i,i+1);
+//  draw_graph(*d2,g);
+//  centered_two.addText(d2);
 
 
   // Draw many sine functions 
@@ -53,7 +64,7 @@ int main()
     for(int j=0; j<l; j++)
     {
       pts[i][j].x = dx * j;
-      pts[i][j].y = sin(dx * j * i);
+      pts[i][j].y = sin(dx * j * (i+1));
     }
   }
   /*length[0] = length[1] = l;
@@ -64,7 +75,7 @@ int main()
     pts[1][i].y = 5 * pow(2., 3. - 2. * ceil(2./(dx * i)));
     }*/
 
-  AddAxes(d, CPoint(0,0), 0,5,0,2,0.5,0.1);
+  /*AddAxes(d, CPoint(0,0), 0,5,0,2,0.5,0.1);
 
   for(int n=3; n<70; n++)
   {
@@ -72,14 +83,14 @@ int main()
     double x1 = 5. * 2. / n;
     double x2 = 5. * 2. / (n-1);
     d->addShape(new CLine(x1,y,x2,y, CColor(C_ORANGE),true));
-  }
+    }*/
   
-  //DrawPlots(d, pts, col, length, n);
+  DrawPlots(d, pts, col, length, n, 0 - 0.1, 4*M_PI + 0.1, -1. - 0.1, 1. + 0.1, 10., 5., false);
 
   // Add text to the sections 
   
   introduction.addText("This is a test article.  It is a              \
-   \\LaTeX ~document generated through C++.  Below is an example image.");
+   \\LaTeX ~document generated through C++.  Below is an example image. ");
 
   introduction.addText("Here is some more text.");
   

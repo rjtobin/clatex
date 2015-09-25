@@ -147,6 +147,21 @@ private:
   void draw(std::string& text);
 };
 
+class CGrid : public CShape
+{
+public:
+  CPoint bot_left, top_right;
+  int step;
+
+  CGrid() : step(0) {color = CColor(C_GRAY);};
+  CGrid(int st, double x1, double y1, double x2, double y2)
+          : step(st), bot_left(CPoint(x1,y1)), top_right(CPoint(x2,y2))
+  {color = CColor(C_GRAY);};
+
+private:
+  void draw(std::string& text);
+};
+
 class CDrawing : public CText
 {
 //friend class CShape;
@@ -191,7 +206,9 @@ public:
 void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
              double y_start, double y_end, double big_grading,
              double small_grading);
-void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length, int n);
+void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length,
+               int n, double start_x, double end_x, double start_y,
+               double end_y, double x_size, double y_size, bool grid);
 
 template <size_t m, size_t n>
 void DrawMatrix(CText& cl, std::string (&mat)[m][n])
