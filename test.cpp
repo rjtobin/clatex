@@ -12,50 +12,16 @@
 
 using namespace std;
 
-int main()
+// constants for our sine graph plot
+const double dx = 0.005;
+const int n = 5;
+int length[n];
+int l = 4. * M_PI / dx;
+CPoint *pts[n];
+
+
+void initialise_sines()
 {
-  Clatex cl;
-
-  // Make the title and a few sections
-  
-  cl.setTitle("My Test Document", "Test Author");
- 
-  CSection& introduction = cl.newSection("Introduction", false);
-  CSection& details = cl.newSection("Details", false);
-  
-  CText& centered = details.matchedCmd("center");
-
-  CDrawing* d = new CDrawing();
-  centered.addText(d);
-
-
-  //details.addText("That was an image.  Here is a nice graph! ");
-
-  //CText& centered_two = details.matchedCmd("center");
-  
-//  CDrawing* d2 = new CDrawing();
-//  Graph g(7);
-//  for(int i=0; i<6; i++)
-//    g.addEdge(i,i+1);
-//  draw_graph(*d2,g);
-//  centered_two.addText(d2);
-
-
-  // Draw many sine functions 
-
-  double dx = 0.005;
-  int n = 5;
-
-  CColor col[n];
-  col[0].name = C_BLACK;
-  col[1].name = C_CYAN;
-  col[2].name = C_OLIVE;
-  col[3].name = C_VIOLET;
-  col[4].name = C_BROWN;
-
-  int length[n];
-  int l = 4. * M_PI / dx;
-  CPoint *pts[n];
   for(int i=0; i<n; i++)
     pts[i] = new CPoint[l];
   for(int i=0; i<n; i++)
@@ -67,22 +33,43 @@ int main()
       pts[i][j].y = sin(dx * j * (i+1));
     }
   }
-  /*length[0] = length[1] = l;
-  for(int i=0; i<l; i++)
-  {
-    
-    pts[1][i].x = 10 * dx * i;
-    pts[1][i].y = 5 * pow(2., 3. - 2. * ceil(2./(dx * i)));
-    }*/
+}
 
-  /*AddAxes(d, CPoint(0,0), 0,5,0,2,0.5,0.1);
+int main()
+{
+  Clatex cl;
 
-  for(int n=3; n<70; n++)
+  // Make the title and a few sections
+  
+  cl.setTitle("My Test Document", "Test Author");
+ 
+  CSection& introduction = cl.newSection("Introduction", false);
+  CSection& details = cl.newSection("Details", false);
+  
+  CDrawing* d = new CDrawing();
+  details.centeredDrawing(d);
+
+  // Draw many sine functions
+  
+  CColor col[n];
+  col[0].name = C_BLACK;
+  col[1].name = C_CYAN;
+  col[2].name = C_OLIVE;
+  col[3].name = C_VIOLET;
+  col[4].name = C_BROWN;
+
+  initialise_sines();
+  
+  /* for(int i=0; i<n; i++)
+    pts[i] = new CPoint[l];
+  for(int i=0; i<n; i++)
   {
-    double y = 12. * pow(2.,3- 2. * n);
-    double x1 = 5. * 2. / n;
-    double x2 = 5. * 2. / (n-1);
-    d->addShape(new CLine(x1,y,x2,y, CColor(C_ORANGE),true));
+    length[i] = l;
+    for(int j=0; j<l; j++)
+    {
+      pts[i][j].x = dx * j;
+      pts[i][j].y = sin(dx * j * (i+1));
+    }
     }*/
   
   DrawPlots(d, pts, col, length, n, 0 - 0.1, 4*M_PI + 0.1, -1. - 0.1, 1. + 0.1, 10., 5., false);
@@ -108,8 +95,8 @@ int main()
   details.mCmd("]");
 
   CSection sec[4];
-  for(int i=0; i<4; i++)
-    sec[i].addText("This is the " + to_string(i) + "th item.");
+  for(int i=1; i<=4; i++)
+    sec[i-1].addText("This is the " + to_string(i) + "th item.");
 
   AddEnumerate(details, sec, 4, sizeof(CSection));
   
