@@ -62,11 +62,13 @@ public:
   
   virtual CText& addText(std::string text);
   virtual CText& addText(CText* next);
+  virtual void centeredDrawing(CDrawing* d);
 
   virtual CText& prependText(std::string text);
   virtual CText& prependText(CText* next);
 
   virtual void getText(std::string& s);
+
 
   virtual CText& matchedCmd(std::string command);
   

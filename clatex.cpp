@@ -57,6 +57,12 @@ CText& CText::addText(CText* text)
   return *text;
 }
 
+void CText::centeredDrawing(CDrawing* d)
+{
+  CText& centered = matchedCmd("center");
+  centered.addText(d);
+}
+
 CText& CText::prependText(string text)
 {
   mText = text + mText;
@@ -87,10 +93,10 @@ void CText::getText(string& s)
 CText& CText::matchedCmd(string command)
 {
   mCmd("begin", command);
-  CText* mid = new CText();
-  CText& ret = addText(mid);
-  CText* end = new CText();
-  end->mCmd("end", command);
+  CText& ret = addText(new CText());
+  CText& end = addText(new CText());
+  end.mCmd("end", command);
+
   return ret;
 }
 
