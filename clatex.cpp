@@ -57,10 +57,16 @@ CText& CText::addText(CText* text)
   return *text;
 }
 
-void CText::centeredDrawing(CDrawing* d)
+/*void CText::centeredDrawing(CDrawing* d)
 {
   CText& centered = matchedCmd("center");
   centered.addText(d);
+  }*/
+
+void CText::matchedText(CText* text, std::string cmd)
+{
+  CText& matched = matchedCmd(cmd);
+  matched.addText(text);
 }
 
 CText& CText::prependText(string text)
@@ -378,8 +384,10 @@ void CTable::getText(std::string& s)
     }
   }
   
-  
   s += "\\end{tabular}\n";
+
+  if(mNext)
+    mNext->getText(s);
 }
 
 void CTable::mFreeRows()

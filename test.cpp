@@ -47,8 +47,7 @@ int main()
   CSection& details = cl.newSection("Details", false);
   
   CDrawing* d = new CDrawing();
-  details.centeredDrawing(d);
-
+  details.matchedText(d, "center");
   // Draw many sine functions
   
   CColor col[n];
@@ -107,7 +106,7 @@ int main()
   table->addHLine();
 
   
-  details.addText(table);
+  details.matchedText(table, "center");
   
   cl.write("test.tex");
   
