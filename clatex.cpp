@@ -316,6 +316,83 @@ void Clatex::mCmd(std::ofstream& mOut, string cmd)
   mOut << endl;
 }
 
+CTable::CTable(unsigned int cols, std::string just)
+ : mCols(cols), mJust(just)
+{
+}
+
+CTable::~CTable()
+{
+  mFreeRows();
+}
+
+void CTable::setNumCols(unsigned int cols)
+{
+  mCols = cols;
+  mFreeRows();
+  mJust = "";
+}
+
+void CTable::setJust(std::string just)
+{
+  mJust = just;
+}
+
+void CTable::addRow(vector<CText*>& row)
+{
+  if(row.size() != mCols)
+    return;
+
+  mRows.push_back(row);
+}
+
+void CTable::addHLine()
+{
+  int curRow = mRows.size();
+  mHLines[curRow]++;
+}
+
+void CTable::getText(std::string& s)
+{
+  s += "\\begin{tabular}{";
+  s += mJust;
+  s += "}\n";
+
+  int curRow = 0;
+  for(deque< vector<CText*> >::iterator i=mRows.begin(); ; i++, curRow++)
+  {
+    if(curRow > 0)
+      s += "\\\\ \n";
+    if(mHLines.count(curRow))
+    {
+      for(int j=0; j<mHLines[curRow]; j++)
+        s+= "\\hline ";
+    }
+    if(i==mRows.end())
+      break;
+    for(vector<CText*>::iterator j = i->begin(); j!=i->end(); j++)
+    {
+      if(j != i->begin())
+        s += " & ";
+      (*j)->getText(s);
+    }
+  }
+  
+  
+  s += "\\end{tabular}\n";
+}
+
+void CTable::mFreeRows()
+{
+  for(deque< vector<CText*> >::iterator i=mRows.begin(); i!=mRows.end(); i++)
+  {
+    for(vector<CText*>::iterator j = i->begin(); j!=i->end(); j++)
+    {
+      delete (*j);
+    }
+  }
+}
+
 void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
              double y_start, double y_end, double big_grading,
              double small_grading)

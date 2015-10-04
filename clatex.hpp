@@ -15,10 +15,12 @@
 
 #include <deque>
 #include <fstream>
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
-class Clatex;
+class Clatex; // XXX: should this be CLatex?
 class CShape;
 class CText;
 class CDrawing;
@@ -203,8 +205,31 @@ public:
   void mCmd(std::ofstream& mOut, std::string cmd);
 };
 
-//void DrawTable(CText* text, 
+class CTable : public CText
+{
+public:
+  CTable() : mCols(0), mJust("") {};
+  CTable(unsigned int cols, std::string just);  
+  ~CTable();
 
+  void setNumCols(unsigned int cols);
+  unsigned int getNumCols() {return mCols; };
+  void setJust(std::string just);
+
+  void addHLine();
+  void addRow(std::vector<CText*>& row);
+  
+  void getText(std::string& s);
+  
+private:
+  unsigned int mCols;
+  std::string mJust;
+  std::deque< std::vector<CText*> > mRows;
+  void mFreeRows();
+  std::map<unsigned int, unsigned int> mHLines;
+};
+
+// XXX: this is no longer...
 void AddAxes(CDrawing* d, CPoint origin, double x_start, double x_end,
              double y_start, double y_end, double big_grading,
              double small_grading);
@@ -212,6 +237,7 @@ void DrawPlots(CDrawing* d, CPoint** plots, CColor* colors, int* length,
                int n, double start_x, double end_x, double start_y,
                double end_y, double x_size, double y_size, bool grid);
 
+// XXX: oh man, this has to go
 template <size_t m, size_t n>
 void DrawMatrix(CText& cl, std::string (&mat)[m][n])
 {

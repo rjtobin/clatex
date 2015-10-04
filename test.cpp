@@ -59,19 +59,7 @@ int main()
   col[4].name = C_BROWN;
 
   initialise_sines();
-  
-  /* for(int i=0; i<n; i++)
-    pts[i] = new CPoint[l];
-  for(int i=0; i<n; i++)
-  {
-    length[i] = l;
-    for(int j=0; j<l; j++)
-    {
-      pts[i][j].x = dx * j;
-      pts[i][j].y = sin(dx * j * (i+1));
-    }
-    }*/
-  
+   
   DrawPlots(d, pts, col, length, n, 0 - 0.1, 4*M_PI + 0.1, -1. - 0.1, 1. + 0.1, 10., 5., false);
 
   // Add text to the sections 
@@ -99,6 +87,27 @@ int main()
     sec[i-1].addText("This is the " + to_string(i) + "th item.");
 
   AddEnumerate(details, sec, 4, sizeof(CSection));
+
+  details.addText("Finally, here is a table: \\\\");
+  
+  CTable* table;
+  table = new CTable(3, "||c|c|c||");
+  table->addHLine();
+  
+  vector<CText*> r(3);
+  r[0] = new CText("r11");
+  r[1] = new CText("r12");
+  r[2] = new CText("r13");
+  table->addRow(r);
+
+  r[0] = new CText("r21");
+  r[1] = new CText("r22");
+  r[2] = new CText("r23");
+  table->addRow(r);
+  table->addHLine();
+
+  
+  details.addText(table);
   
   cl.write("test.tex");
   
