@@ -6,6 +6,7 @@
    Josh Tobin (tobinrj@tcd.ie), 2015
    ======================================================================== */
 
+// XXX: add multiple plots and color support to CPlot 
 // XXX: add file options (font size etc) before opening
 // XXX: mCmd fixes, no random latex commands
 // XXX: add packages dynamically, rather than in bulk
@@ -165,6 +166,23 @@ public:
 
 private:
   void draw(std::string& text);
+};
+
+class CPlot : public CShape
+{
+public:
+  CPlot();
+  
+  int getSize();
+  void setSize(int x);
+  
+  void setPoint(int i, double x, double y);
+  double getX(int i);
+  double getY(int i);
+
+private:
+  std::vector<CPoint> mPts; //XXX: should this be CPoint?
+  void draw(std::string& out);
 };
 
 class CDrawing : public CText

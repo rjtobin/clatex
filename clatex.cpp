@@ -195,6 +195,52 @@ void CGrid::draw(string& out)
   out += "(" + to_string(top_right.x) + "," + to_string(top_right.y) + ");\n";
 }
 
+CPlot::CPlot()
+{
+}
+
+int CPlot::getSize()
+{
+  return mPts.size();
+}
+
+void CPlot::setSize(int x)
+{
+  mPts.resize(x);
+}
+
+void CPlot::setPoint(int i, double x, double y)
+{
+  if(i<0 || i>= mPts.size())
+    return;
+  mPts[i].x = x;
+  mPts[i].y = y;
+}
+
+double CPlot::getX(int i)
+{
+  return mPts[i].x; // XXX: bounds checking 
+}
+
+double CPlot::getY(int i)
+{
+  return mPts[i].y; // XXX: bounds checking 
+}
+
+void CPlot::draw(string& out)
+{
+  out += "\\datavisualization [";
+  out += "scientific axes, visualize as smooth line";
+  out += "]\n";
+
+  out += "data {";
+  out += "x,y\n";
+  for(vector<CPoint>::iterator i=mPts.begin(); i!=mPts.end(); i++)
+  {
+    out += to_string(i->x) + "," + to_string(i->y) + "\n";
+  }
+  out += "};\n";
+}
 
 CDrawing::CDrawing()
 {
@@ -254,6 +300,7 @@ void Clatex::write(string filename)
   mCmd(out, "documentclass", "11pt", "article");
   mCmd(out, "usepackage", "tikz");
   mCmd(out, "usepackage", "amsmath");
+  mCmd(out, "usetikzlibrary", "datavisualization");
 
   if(mOutTitle)
   {

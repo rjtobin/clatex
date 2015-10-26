@@ -59,8 +59,16 @@ int main()
 
   initialise_sines();
    
-  DrawPlots(d, pts, col, length, n, 0 - 0.1, 4*M_PI + 0.1, -1. - 0.1, 1. + 0.1, 10., 5., false);
+  //DrawPlots(d, pts, col, length, n, 0 - 0.1, 4*M_PI + 0.1, -1. - 0.1, 1. + 0.1, 10., 5., false);
 
+  CPlot* plot = new CPlot();
+  plot->setSize(length[1]);
+  for(int i=0; i<length[1]; i++)
+  {
+    plot->setPoint(i,pts[1][i].x, pts[1][i].y);
+  }
+  d->addShape(plot);
+  
   // Add text to the sections 
   
   introduction.addText("This is a test article.  It is a              \
