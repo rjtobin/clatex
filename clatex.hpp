@@ -90,6 +90,7 @@ protected:
 
 };
 
+// XXX: perhaps this class name is a bad choice
 class CSection : public CText
 {
 public:

@@ -160,7 +160,8 @@ void CSection::mCmd(string cmd)
 
 CText& CSection::matchedCmd(string command)
 {
-  mCmd("begin", command);
+  CText& beg = addText(new CText()); // XXX: why is this nexessary?
+  beg.mCmd("begin", command);
   CText& ret = addText(new CText());
   CText& end = addText(new CText());
   end.mCmd("end", command);
