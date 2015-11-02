@@ -160,7 +160,7 @@ void CSection::mCmd(string cmd)
 
 CText& CSection::matchedCmd(string command)
 {
-  CText& beg = addText(new CText()); // XXX: why is this nexessary?
+  CText& beg = addText(new CText()); // XXX: why is this necessary?
   beg.mCmd("begin", command);
   CText& ret = addText(new CText());
   CText& end = addText(new CText());
@@ -274,7 +274,7 @@ void CDrawing::getText(string& text)
 }
 
 Clatex::Clatex()
- : mOutTitle(false)  
+ : mOutTitle(false), mTOC(false)  
 {
 }
 
@@ -294,6 +294,11 @@ void Clatex::setTitle(string title, string author)
   mOutTitle = true;
 }
 
+void Clatex::generateTOC(bool toc)
+{
+  mTOC = toc;
+}
+
 void Clatex::write(string filename)
 {
   ofstream out(filename);
@@ -301,6 +306,7 @@ void Clatex::write(string filename)
   mCmd(out, "documentclass", "11pt", "article");
   mCmd(out, "usepackage", "tikz");
   mCmd(out, "usepackage", "amsmath");
+  mCmd(out, "usepackage", "array");
   mCmd(out, "usetikzlibrary", "datavisualization");
 
   if(mOutTitle)
@@ -312,6 +318,8 @@ void Clatex::write(string filename)
   mCmd(out, "begin", "document");
   if(mOutTitle)
     mCmd(out, "maketitle");
+  if(mTOC)
+    mCmd(out, "tableofcontents");
 
   deque<string>::iterator title = mSectionTitles.begin();
   deque<bool>::iterator number = mSectionNumber.begin();

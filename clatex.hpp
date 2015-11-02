@@ -204,17 +204,19 @@ public:
   Clatex();
   ~Clatex();
   
-  void setTitle(std::string title, std::string author);  
+  void setTitle(std::string title, std::string author);
+  void generateTOC(bool toc);
   
   void write(std::string filename);
 
   CSection& newSection(std::string title);
   CSection& newSection(std::string title, bool number);
   
-//private:
+private:
   std::string mTitle;
   std::string mAuthor;
   bool mOutTitle;
+  bool mTOC;
   
   std::deque<CSection*> mSections;
   std::deque<std::string> mSectionTitles;
