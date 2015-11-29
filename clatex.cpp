@@ -175,6 +175,15 @@ void CPoint::draw(string& out)
   out += " (" + to_string(x) + "," + to_string(y) + ") circle [radius=0.08];\n";
 }
 
+void CLabel::draw(string& out)
+{
+  out += "\\filldraw[" + color.name + "]";
+  out += " (" + to_string(x) + "," + to_string(y) + ") node[rectangle,draw] ";
+  if(name != "")
+    out += "(" + name + ")";
+  out += " {" + text + "};\n";
+}
+
 void CLine::draw(string& out)
 {
   out += "\\draw[";
@@ -182,7 +191,10 @@ void CLine::draw(string& out)
     out += "thick,";
   if(dashed)
     out += "dashed,";
-  out += color.name + "] (" + to_string(p1.x) + "," + to_string(p1.y) + ") -- (" + to_string(p2.x) + "," + to_string(p2.y) + ");\n";
+  if(!named)
+    out += color.name + "] (" + to_string(p1.x) + "," + to_string(p1.y) + ") -- (" + to_string(p2.x) + "," + to_string(p2.y) + ");\n";
+  else
+    out += color.name + "] (" + p1_name + ") -- (" + p2_name + ");\n";
 }
 
 void CGrid::draw(string& out)

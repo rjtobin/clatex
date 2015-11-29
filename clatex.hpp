@@ -130,6 +130,21 @@ private:
   void draw(std::string& out);
 };
 
+class CLabel : public CShape
+{
+public:
+  double x, y;
+  std::string text;
+  std::string name;
+  
+  CLabel()
+   : x(0), y(0) {}; 
+  CLabel(double X, double Y)
+   : x(X), y(Y) {};
+private:
+  void draw(std::string& out);
+};
+
 class CLine : public CShape
 {
 public:
@@ -137,19 +152,23 @@ public:
   bool thick;
   bool dashed;
 
+  bool named;
+  std::string p1_name, p2_name;
+  
   CLine()
-   : thick(false), dashed(false) {};
+   : thick(false), dashed(false), named(false) {};
   CLine(CPoint P1, CPoint P2)
-   : p1(P1), p2(P2), thick(false), dashed(false) {};
+   : p1(P1), p2(P2), thick(false), dashed(false), named(false) {};
   CLine(CPoint P1, CPoint P2, CColor Color)
-   : p1(P1), p2(P2), thick(false), dashed(false) { color = Color;};
+   : p1(P1), p2(P2), thick(false), dashed(false), named(false) { color = Color;};
   CLine(double x1, double y1, double x2, double y2)
-   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)) {};
+   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)), named(false) {};
   CLine(double x1, double y1, double x2, double y2, CColor Color)
-   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)) {color = Color;};
+   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)), named(false) {color = Color;};
   CLine(double x1, double y1, double x2, double y2, CColor Color, bool Thick)
-   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)), thick(Thick) {color = Color;};
-
+   : p1(CPoint(x1,y1)), p2(CPoint(x2,y2)), thick(Thick), named(false) {color = Color;};
+  CLine(std::string n1, std::string n2)
+   : p1_name(n1), p2_name(n2), named(true) {};
 private:
   void draw(std::string& text);
 };
